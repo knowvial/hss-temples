@@ -479,9 +479,9 @@
             const sessionIdInput = document.getElementById('presentation-session-id');
             sessionIdInput.value = newSessionId;
             
-            // Generate and display viewer URL
+            // Generate and display viewer URL with direct access
             const baseUrl = window.location.href.split('?')[0];
-            const viewerUrl = `${baseUrl}?session=${newSessionId}`;
+            const viewerUrl = `${baseUrl}?session=${newSessionId}&direct=true`;
             const urlInput = document.getElementById('presentation-url');
             urlInput.value = viewerUrl;
             
@@ -585,14 +585,36 @@
         function initializeApp() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionParam = urlParams.get('session');
+            const presenterParam = urlParams.get('presenter');
+            const directParam = urlParams.get('direct');
             
             document.getElementById('total-temples').textContent = temples.length;
+            
+            // Direct presenter access with password in URL (for your personal use only)
+            if (presenterParam === PRESENTER_PASSWORD) {
+                setupPresenterMode();
+                showPresentationContent();
+                return;
+            }
             
             if (sessionParam) {
                 // Try to join as viewer
                 if (joinSession(sessionParam)) {
-                    // Session exists, show waiting screen
+                    // Session exists
                     sessionId = sessionParam;
+                    
+                    // Direct access without waiting screen if parameter is set
+                    if (directParam === 'true') {
+                        const sessionData = getSessionData(sessionId);
+                        if (sessionData && sessionData.active) {
+                            currentTempleIndex = sessionData.currentSlide;
+                            setupViewerMode();
+                            showPresentationContent();
+                            return;
+                        }
+                    }
+                    
+                    // Otherwise show waiting screen
                     showWaitingScreen();
                     
                     // Check if session is active and has content
