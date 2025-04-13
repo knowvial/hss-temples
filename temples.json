@@ -1,0 +1,120 @@
+{
+  "title": "South Indian Cultural Sites Tour",
+  "description": "A guided tour of famous cultural sites in South India",
+  "author": "Cultural Explorer",
+  "date": "2025-04-13",
+  "slides": [
+    {
+      "title": "Meenakshi Amman Temple",
+      "subtitle": "Madurai, Tamil Nadu",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "The Meenakshi Amman Temple is dedicated to goddess Meenakshi (a form of Parvati) and her consort, Sundareshwar (a form of Shiva). This magnificent site is known for its towering gopurams (gateway towers) adorned with thousands of colorful sculptures.",
+      "factsTitle": "Architectural Highlights",
+      "keyFacts": [
+        "Features 14 gateway towers ranging from 45-50 meters in height",
+        "The complex covers 45 acres",
+        "Has a sacred tank called the Golden Lotus Tank (Porthamarai Kulam)",
+        "The current structure dates mainly to the 16th-17th centuries"
+      ]
+    },
+    {
+      "title": "Brihadeeswarar Temple",
+      "subtitle": "Thanjavur, Tamil Nadu",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "Also known as Peruvudaiyar Kovil, this site is dedicated to Lord Shiva and was built by Raja Raja Chola I in the 11th century. It's a UNESCO World Heritage Site and one of the largest monuments in India.",
+      "factsTitle": "Historical Significance",
+      "keyFacts": [
+        "The main vimana (tower) stands at 216 feet (66 meters) tall",
+        "Built entirely of granite with over 130,000 tons of granite used",
+        "The main lingam is one of the largest in India, standing about 3.7 meters tall",
+        "The structure's shadow never falls on the ground at noon"
+      ]
+    },
+    {
+      "title": "Virupaksha Temple",
+      "subtitle": "Hampi, Karnataka",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "Dedicated to Lord Virupaksha, a form of Shiva, this is the oldest and principal monument in Hampi. The site continues to prosper as an important pilgrimage center even after the fall of the Vijayanagara Empire.",
+      "factsTitle": "Cultural Heritage",
+      "keyFacts": [
+        "History dates back to the 7th century",
+        "The main gopuram stands 50 meters high",
+        "Features exquisite stone carvings and impressive pillared halls",
+        "Houses the shrine of Pampa, the local river goddess and consort of Virupaksha"
+      ]
+    },
+    {
+      "title": "Ekambareswarar Temple",
+      "subtitle": "Kanchipuram, Tamil Nadu",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "This site is dedicated to Shiva as Ekambareswarar (Lord of the Single Mango Tree). It is one of the Pancha Bhoota Stalas representing the element Earth and is known for its 3,500-year-old mango tree.",
+      "factsTitle": "Sacred Elements",
+      "keyFacts": [
+        "Features a 59-meter high gopuram, one of the tallest towers in South India",
+        "The complex covers 23 acres",
+        "Contains 1,000 lingam sculptures",
+        "The legendary mango tree is said to produce four different types of mangoes"
+      ]
+    },
+    {
+      "title": "Annamalaiyar Temple",
+      "subtitle": "Tiruvannamalai, Tamil Nadu",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "Dedicated to Lord Shiva, this site represents the element fire among the Pancha Bhoota Stalas. The monument is associated with the sacred hill Arunachala, which is considered a manifestation of Shiva himself.",
+      "factsTitle": "Spiritual Significance",
+      "keyFacts": [
+        "The main gopuram is 217 feet (66 meters) high",
+        "The complex spans 25 acres",
+        "During the Karthigai Deepam festival, a huge lamp is lit atop the Arunachala Hill",
+        "The site has been praised in the Tamil Tevaram hymns by saints Sambandar and Appar"
+      ]
+    },
+    {
+      "title": "Ramanathaswamy Temple",
+      "subtitle": "Rameswaram, Tamil Nadu",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "This monument is dedicated to Lord Shiva and is significant as one of the twelve Jyotirlinga shrines. According to legend, Lord Rama worshipped Shiva here to cleanse himself of the sin of killing Ravana.",
+      "factsTitle": "Architectural Features",
+      "keyFacts": [
+        "Features the longest corridor among all Hindu sites, with 1,212 pillars",
+        "Has 22 theerthams (holy water tanks) within the complex",
+        "The main shrine houses a lingam that was installed by Lord Rama himself",
+        "The design follows Dravidian architecture with massive walls and gopurams"
+      ]
+    },
+    {
+      "title": "Padmanabhaswamy Temple",
+      "subtitle": "Thiruvananthapuram, Kerala",
+      "images": [
+        "/api/placeholder/800/500",
+        "/api/placeholder/800/500"
+      ],
+      "description": "This monument is dedicated to Lord Vishnu in the form of Padmanabha (one who emerges from the lotus) reclining on the serpent Anantha. The site gained international attention for its vast treasure discovered in sealed vaults.",
+      "factsTitle": "Treasures and Art",
+      "keyFacts": [
+        "The main deity is a 18-foot-long Vishnu in Anantha Shayanam posture",
+        "Built in a blend of Kerala and Dravidian architectural styles",
+        "It's one of the 108 sacred Vishnu sites or Divya Desams",
+        "The monument was controlled by the royal family of Travancore until recent times"
+      ]
+    }
+  ]
+}
