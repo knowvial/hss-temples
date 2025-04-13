@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knowvial Interactive Presentation</title>
+    <title>Interactive Presentation</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -209,13 +209,6 @@
                         contentFile: contentFileName
                     };
                     localStorage.setItem('presentation-session-' + sessionId, JSON.stringify(sessionData));
-                    
-                    // Also store in session storage as a backup
-                    sessionStorage.setItem('current-presentation-data', JSON.stringify({
-                        sessionId: sessionId,
-                        slideIndex: slideIndex,
-                        contentFile: contentFileName
-                    }));
                 } catch (error) {
                     console.error("Error updating session:", error);
                 }
@@ -230,7 +223,7 @@
         }
 
         // Default content file name, can be overridden
-        let contentFileName = "temples.json";
+        let contentFileName = "presentation-content.json";
 
         // Function to load presentation data
         async function loadPresentationData(fileName) {
@@ -310,6 +303,7 @@
                 </div>
 
                 <div class="file-selector">
+                    <h3>Presentation Content</h3>
                     <p>Current content file: <strong id="current-file-name">${contentFileName}</strong></p>
                     <div class="form-group">
                         <label for="content-file-input">Change content file:</label>
@@ -634,22 +628,6 @@
             // Override content file if specified in URL
             if (contentParam) {
                 contentFileName = decodeURIComponent(contentParam);
-            }
-
-            // Check for a session in sessionStorage (backup method)
-            try {
-                const backupSession = sessionStorage.getItem('current-presentation-data');
-                if (backupSession && !sessionParam) {
-                    const backupData = JSON.parse(backupSession);
-                    if (backupData && backupData.sessionId) {
-                        // Redirect to the session with the backup data
-                        const baseUrl = window.location.href.split('?')[0];
-                        window.location.href = `${baseUrl}?session=${backupData.sessionId}&direct=true`;
-                        return;
-                    }
-                }
-            } catch (error) {
-                console.error("Error checking backup session:", error);
             }
 
             if (presenterParam === PRESENTER_PASSWORD && sessionParam) {
