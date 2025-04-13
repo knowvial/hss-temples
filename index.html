@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knowvial Interactive Presentation</title>
+    <title>Interactive Presentation</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -166,36 +166,60 @@
             return 'session-' + Math.random().toString(36).substr(2, 9);
         }
 
+        // Function to get session data
+        function getSessionData(sid) {
+            try {
+                const data = localStorage.getItem('presentation-session-' + sid);
+                return data ? JSON.parse(data) : null;
+            } catch (error) {
+                console.error("Error accessing localStorage:", error);
+                // For cross-domain or private browsing issues
+                return null;
+            }
+        }
+
         // Function to create a new session
         function createSession() {
-            const newSessionId = generateSessionId();
-            const sessionData = {
-                active: true,
-                currentSlide: 0,
-                lastUpdated: new Date().getTime(),
-                contentFile: contentFileName
-            };
-            localStorage.setItem('presentation-session-' + newSessionId, JSON.stringify(sessionData));
-            return newSessionId;
+            try {
+                const newSessionId = generateSessionId();
+                const sessionData = {
+                    active: true,
+                    currentSlide: 0,
+                    lastUpdated: new Date().getTime(),
+                    contentFile: contentFileName
+                };
+                localStorage.setItem('presentation-session-' + newSessionId, JSON.stringify(sessionData));
+                return newSessionId;
+            } catch (error) {
+                console.error("Error creating session:", error);
+                // Fallback for private browsing or limited storage
+                alert("Warning: Your browser may have limitations with local storage. The presentation will work, but reconnecting may be difficult if you close the tab.");
+                return generateSessionId(); // Still return an ID even if storage fails
+            }
         }
 
         // Function to update session data
         function updateSession(slideIndex) {
             if (sessionId) {
-                const sessionData = {
-                    active: true,
-                    currentSlide: slideIndex,
-                    lastUpdated: new Date().getTime(),
-                    contentFile: contentFileName
-                };
-                localStorage.setItem('presentation-session-' + sessionId, JSON.stringify(sessionData));
+                try {
+                    const sessionData = {
+                        active: true,
+                        currentSlide: slideIndex,
+                        lastUpdated: new Date().getTime(),
+                        contentFile: contentFileName
+                    };
+                    localStorage.setItem('presentation-session-' + sessionId, JSON.stringify(sessionData));
+                    
+                    // Also store in session storage as a backup
+                    sessionStorage.setItem('current-presentation-data', JSON.stringify({
+                        sessionId: sessionId,
+                        slideIndex: slideIndex,
+                        contentFile: contentFileName
+                    }));
+                } catch (error) {
+                    console.error("Error updating session:", error);
+                }
             }
-        }
-
-        // Function to get session data
-        function getSessionData(sid) {
-            const data = localStorage.getItem('presentation-session-' + sid);
-            return data ? JSON.parse(data) : null;
         }
 
         // Function to end a session
@@ -206,7 +230,7 @@
         }
 
         // Default content file name, can be overridden
-        let contentFileName = "temples.json";
+        let contentFileName = "presentation-content.json";
 
         // Function to load presentation data
         async function loadPresentationData(fileName) {
@@ -286,6 +310,7 @@
                 </div>
 
                 <div class="file-selector">
+                    <h3>Presentation Content</h3>
                     <p>Current content file: <strong id="current-file-name">${contentFileName}</strong></p>
                     <div class="form-group">
                         <label for="content-file-input">Change content file:</label>
@@ -443,8 +468,22 @@
                     <h2>Connecting to presentation...</h2>
                     <p class="animated-dots">Waiting for presenter</p>
                     <p>Session ID: ${sessionId}</p>
+                    <p style="margin-top: 20px;">Having trouble connecting?</p>
+                    <button id="refresh-connection-btn" class="btn">Refresh Connection</button>
                 </div>
             `;
+            
+            // Add refresh button functionality
+            setTimeout(() => {
+                const refreshBtn = document.getElementById('refresh-connection-btn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', function() {
+                        const baseUrl = window.location.href.split('?')[0];
+                        const directUrl = `${baseUrl}?session=${sessionId}&direct=true&nocache=${new Date().getTime()}`;
+                        window.location.href = directUrl;
+                    });
+                }
+            }, 100);
         }
 
         // Function to show the login screen
@@ -502,11 +541,44 @@
 
         // Function to start polling for updates as a viewer
         function startPolling() {
+            // First, try to load immediately to avoid waiting
+            const sessionData = getSessionData(sessionId);
+            if (sessionData && sessionData.active) {
+                // Session exists and is active
+                currentSlideIndex = sessionData.currentSlide;
+                if (document.getElementById('slide-container')) {
+                    document.getElementById('slide-container').innerHTML = showSlide(currentSlideIndex);
+                    document.getElementById('slide-counter').textContent = currentSlideIndex + 1;
+                } else {
+                    showViewerInterface();
+                }
+            }
+            
+            // Start regular polling
             const pollInterval = setInterval(() => {
                 const sessionData = getSessionData(sessionId);
                 
                 if (!sessionData) {
-                    // Session doesn't exist yet
+                    // Session doesn't exist yet - try direct URL
+                    const baseUrl = window.location.href.split('?')[0];
+                    const directUrl = `${baseUrl}?session=${sessionId}&direct=true&nocache=${new Date().getTime()}`;
+                    
+                    // Update status on waiting screen
+                    const waitingScreen = document.querySelector('.waiting-screen');
+                    if (waitingScreen) {
+                        waitingScreen.innerHTML = `
+                            <h2>Reconnecting to presentation...</h2>
+                            <p class="animated-dots">Attempting to establish connection</p>
+                            <p>Session ID: ${sessionId}</p>
+                            <p>If this persists, try refreshing the page or clicking below:</p>
+                            <button id="refresh-btn" class="btn">Reconnect</button>
+                        `;
+                        
+                        // Add refresh button functionality
+                        document.getElementById('refresh-btn').addEventListener('click', function() {
+                            window.location.href = directUrl;
+                        });
+                    }
                     return;
                 }
                 
@@ -557,10 +629,28 @@
             const sessionParam = urlParams.get('session');
             const presenterParam = urlParams.get('presenter');
             const contentParam = urlParams.get('content');
+            const directParam = urlParams.get('direct');
+            const nocacheParam = urlParams.get('nocache'); // Added for cache busting
             
             // Override content file if specified in URL
             if (contentParam) {
                 contentFileName = decodeURIComponent(contentParam);
+            }
+
+            // Check for a session in sessionStorage (backup method)
+            try {
+                const backupSession = sessionStorage.getItem('current-presentation-data');
+                if (backupSession && !sessionParam) {
+                    const backupData = JSON.parse(backupSession);
+                    if (backupData && backupData.sessionId) {
+                        // Redirect to the session with the backup data
+                        const baseUrl = window.location.href.split('?')[0];
+                        window.location.href = `${baseUrl}?session=${backupData.sessionId}&direct=true`;
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking backup session:", error);
             }
 
             if (presenterParam === PRESENTER_PASSWORD && sessionParam) {
@@ -574,6 +664,8 @@
             if (sessionParam) {
                 // Viewer mode
                 sessionId = sessionParam;
+                
+                // Try to get session data first
                 const sessionData = getSessionData(sessionId);
                 
                 if (sessionData && sessionData.contentFile) {
@@ -586,9 +678,21 @@
                     await showViewerInterface();
                     startPolling();
                 } else {
-                    // Session doesn't exist yet or is not active
+                    // Session doesn't exist yet or is not active - but we'll keep trying
                     showWaitingScreen();
                     startPolling();
+                    
+                    // Automatically try reconnecting after 5 seconds if the direct parameter is set
+                    if (directParam === 'true') {
+                        setTimeout(() => {
+                            const sessionData = getSessionData(sessionId);
+                            if (!sessionData || !sessionData.active) {
+                                // Session still doesn't exist, attempt another refresh
+                                const baseUrl = window.location.href.split('?')[0];
+                                window.location.href = `${baseUrl}?session=${sessionId}&direct=true&nocache=${new Date().getTime()}`;
+                            }
+                        }, 5000);
+                    }
                 }
                 return;
             }
