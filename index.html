@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>South Indian Temple Tour</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 30px;
+        }
+        .temple-display {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .temple-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .temple-info {
+            margin-bottom: 20px;
+        }
+        .temple-name {
+            font-size: 1.5rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .location {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .description {
+            line-height: 1.6;
+        }
+        .key-facts {
+            background-color: #f9f5eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .key-facts h3 {
+            margin-top: 0;
+            color: #8b4513;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .presenter-controls {
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #6d370f;
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .progress {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .waiting-screen {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+        .waiting-icon {
+            font-size: 3rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .mode-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #presentation-url {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .copy-btn {
+            margin-top: 10px;
+            background-color: #4a6da7;
+        }
+        #qrcode {
+            text-align: center;
+            margin-top: 15px;
+        }
+        @media (max-width: 600px) {
+            .temple-display {
+                padding: 15px;
+            }
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-active {
+            background-color: #4CAF50;
+        }
+        .status-waiting {
+            background-color: #FF9800;
+        }
+        .session-info {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .animated-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        @keyframes dots {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>South Indian Temple Tour</h1>
+        
+        <!-- Login Screen for Presenter -->
+        <div id="login-screen" class="login-container">
+            <h2>Presenter Login</h2>
+            <div class="form-group">
+                <label for="password-input">Enter Presenter Password</label>
+                <input type="password" id="password-input" placeholder="Enter password">
+            </div>
+            <button id="login-btn" class="btn">Start Presentation</button>
+            
+            <div style="margin-top: 30px; text-align: left;">
+                <p><strong>Or join as a viewer:</strong></p>
+                <div class="form-group">
+                    <label for="session-input">Enter Session ID</label>
+                    <input type="text" id="session-input" placeholder="Enter session ID provided by presenter">
+                </div>
+                <button id="join-session-btn" class="btn">Join Session</button>
+            </div>
+        </div>
+        
+        <!-- Waiting Screen for Viewers -->
+        <div id="waiting-screen" class="waiting-screen hidden">
+            <div class="waiting-icon">⏱️</div>
+            <h2>Waiting for the presenter to start</h2>
+            <p class="animated-dots">Please wait</p>
+            <div class="session-info">
+                <p><span class="status-indicator status-waiting"></span> Connected to session: <span id="session-id-display"></span></p>
+            </div>
+        </div>
+        
+        <!-- Presentation Content -->
+        <div id="presentation-content" class="hidden">
+            <div id="presenter-controls" class="presenter-controls hidden">
+                <h3>Presenter Controls</h3>
+                <p>Share this session ID with your audience:</p>
+                <input type="text" id="presentation-session-id" readonly>
+                <button id="copy-session-btn" class="btn copy-btn">Copy Session ID</button>
+                
+                <p>Or share this direct link:</p>
+                <input type="text" id="presentation-url" readonly>
+                <button id="copy-url-btn" class="btn copy-btn">Copy Link</button>
+                
+                <div id="qrcode"></div>
+                <p>Session Status: <span class="status-indicator status-active"></span> Active</p>
+                <button id="end-session-btn" class="btn" style="background-color: #d9534f;">End Session</button>
+            </div>
+            
+            <div id="temple-container"></div>
+            
+            <div id="controls" class="controls">
+                <button id="prev-btn" class="btn" disabled>Previous</button>
+                <button id="next-btn" class="btn">Next</button>
+            </div>
+            
+            <div class="progress">
+                Temple <span id="current-index">1</span> of <span id="total-temples">7</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // ====== Temple Data ======
+        const temples = [
+            {
+                name: "Meenakshi Amman Temple",
+                location: "Madurai, Tamil Nadu",
+                image: "/api/placeholder/800/500", // Replace with actual image URL in a real implementation
+                description: "The Meenakshi Amman Temple is dedicated to goddess Meenakshi (a form of Parvati) and her consort, Sundareshwar (a form of Shiva). This magnificent temple is known for its towering gopurams (gateway towers) adorned with thousands of colorful sculptures.",
+                keyFacts: [
+                    "Features 14 gateway towers ranging from 45-50 meters in height",
+                    "The temple complex covers 45 acres",
+                    "Has a sacred tank called the Golden Lotus Tank (Porthamarai Kulam)",
+                    "The current structure dates mainly to the 16th-17th centuries"
+                ]
+            },
+            {
+                name: "Brihadeeswarar Temple",
+                location: "Thanjavur, Tamil Nadu",
+                image: "/api/placeholder/800/500",
+                description: "Also known as Peruvudaiyar Kovil, this temple is dedicated to Lord Shiva and was built by Raja Raja Chola I in the 11th century. It's a UNESCO World Heritage Site and one of the largest temples in India.",
+                keyFacts: [
+                    "The main vimana (tower) stands at 216 feet (66 meters) tall",
+                    "The temple is built entirely of granite with over 130,000 tons of granite used",
+                    "The main lingam is one of the largest in India, standing about 3.7 meters tall",
+                    "The temple's shadow never falls on the ground at noon"
+                ]
+            },
+            {
+                name: "Virupaksha Temple",
+                location: "Hampi, Karnataka",
+                image: "/api/placeholder/800/500",
+                description: "Dedicated to Lord Virupaksha, a form of Shiva, this is the oldest and principal temple in Hampi. The temple continues to prosper as an important pilgrimage center even after the fall of the Vijayanagara Empire.",
+                keyFacts: [
+                    "Temple history dates back to the 7th century",
+                    "The main gopuram stands 50 meters high",
+                    "Features exquisite stone carvings and impressive pillared halls",
+                    "Houses the shrine of Pampa, the local river goddess and consort of Virupaksha"
+                ]
+            },
+            {
+                name: "Ekambareswarar Temple",
+                location: "Kanchipuram, Tamil Nadu",
+                image: "/api/placeholder/800/500",
+                description: "This temple is dedicated to Shiva as Ekambareswarar (Lord of the Single Mango Tree). It is one of the Pancha Bhoota Stalas representing the element Earth and is known for its 3,500-year-old mango tree.",
+                keyFacts: [
+                    "Features a 59-meter high gopuram, one of the tallest temple towers in South India",
+                    "The temple complex covers 23 acres",
+                    "Contains 1,000 lingam sculptures",
+                    "The legendary mango tree is said to produce four different types of mangoes"
+                ]
+            },
+            {
+                name: "Annamalaiyar Temple",
+                location: "Tiruvannamalai, Tamil Nadu",
+                image: "/api/placeholder/800/500",
+                description: "Dedicated to Lord Shiva, this temple represents the element fire among the Pancha Bhoota Stalas. The temple is associated with the sacred hill Arunachala, which is considered a manifestation of Shiva himself.",
+                keyFacts: [
+                    "The main gopuram is 217 feet (66 meters) high",
+                    "The temple complex spans 25 acres",
+                    "During the Karthigai Deepam festival, a huge lamp is lit atop the Arunachala Hill",
+                    "The temple has been praised in the Tamil Tevaram hymns by saints Sambandar and Appar"
+                ]
+            },
+            {
+                name: "Ramanathaswamy Temple",
+                location: "Rameswaram, Tamil Nadu",
+                image: "/api/placeholder/800/500",
+                description: "This temple is dedicated to Lord Shiva and is significant as one of the twelve Jyotirlinga shrines. According to legend, Lord Rama worshipped Shiva here to cleanse himself of the sin of killing Ravana.",
+                keyFacts: [
+                    "Features the longest corridor among all Hindu temples, with 1,212 pillars",
+                    "Has 22 theerthams (holy water tanks) within the temple complex",
+                    "The main shrine houses a lingam that was installed by Lord Rama himself",
+                    "The temple's design follows Dravidian architecture with massive walls and gopurams"
+                ]
+            },
+            {
+                name: "Padmanabhaswamy Temple",
+                location: "Thiruvananthapuram, Kerala",
+                image: "/api/placeholder/800/500",
+                description: "This temple is dedicated to Lord Vishnu in the form of Padmanabha (one who emerges from the lotus) reclining on the serpent Anantha. The temple gained international attention for its vast treasure discovered in sealed vaults.",
+                keyFacts: [
+                    "The main deity is a 18-foot-long Vishnu in Anantha Shayanam posture",
+                    "The temple is built in a blend of Kerala and Dravidian architectural styles",
+                    "It's one of the 108 sacred Vishnu temples or Divya Desams",
+                    "The temple was controlled by the royal family of Travancore until recent times"
+                ]
+            }
+        ];
+
+        // ====== Application Variables ======
+        let currentTempleIndex = 0;
+        let isPresenterMode = false;
+        let sessionId = null;
+        
+        // The presenter password - in a real application, this would be securely stored
+        const PRESENTER_PASSWORD = "temple123"; // You can change this to any password you prefer
+        
+        // ====== Session Management ======
+        // Generate a unique session ID
+        function generateSessionId() {
+            return 'session-' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Check if session exists
+        function checkSessionStatus(id) {
+            const sessionData = localStorage.getItem('temple-session-' + id);
+            return sessionData !== null;
+        }
+        
+        // Create a new presenter session
+        function createPresenterSession() {
+            sessionId = generateSessionId();
+            const sessionData = {
+                active: true,
+                currentSlide: 0,
+                lastUpdated: new Date().getTime()
+            };
+            localStorage.setItem('temple-session-' + sessionId, JSON.stringify(sessionData));
+            return sessionId;
+        }
+        
+        // Join existing session as viewer
+        function joinSession(id) {
+            if (checkSessionStatus(id)) {
+                sessionId = id;
+                return true;
+            }
+            return false;
+        }
+        
+        // Update session data
+        function updateSessionData(slideIndex) {
+            if (sessionId && isPresenterMode) {
+                const sessionData = {
+                    active: true,
+                    currentSlide: slideIndex,
+                    lastUpdated: new Date().getTime()
+                };
+                localStorage.setItem('temple-session-' + sessionId, JSON.stringify(sessionData));
+            }
+        }
+        
+        // Get current session data
+        function getSessionData(id) {
+            const data = localStorage.getItem('temple-session-' + id);
+            return data ? JSON.parse(data) : null;
+        }
+        
+        // End session
+        function endSession() {
+            if (sessionId && isPresenterMode) {
+                localStorage.removeItem('temple-session-' + sessionId);
+                return true;
+            }
+            return false;
+        }
+        
+        // ====== UI Functions ======
+        // Show the current temple
+        function showCurrentTemple() {
+            const temple = temples[currentTempleIndex];
+            const templeContainerEl = document.getElementById('temple-container');
+            const currentIndexEl = document.getElementById('current-index');
+            
+            // Create temple display HTML
+            let templeHTML = `
+                <div class="temple-display">
+                    <img src="${temple.image}" alt="${temple.name}" class="temple-image">
+                    <div class="temple-info">
+                        <div class="temple-name">${temple.name}</div>
+                        <div class="location">${temple.location}</div>
+                        <div class="description">${temple.description}</div>
+                        <div class="key-facts">
+                            <h3>Key Facts</h3>
+                            <ul>
+            `;
+            
+            // Add key facts to the HTML
+            temple.keyFacts.forEach(fact => {
+                templeHTML += `<li>${fact}</li>`;
+            });
+            
+            templeHTML += `
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update the DOM
+            templeContainerEl.innerHTML = templeHTML;
+            currentIndexEl.textContent = currentTempleIndex + 1;
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentTempleIndex === 0;
+            nextBtn.disabled = currentTempleIndex === temples.length - 1;
+            
+            // If in presenter mode, update the session data
+            if (isPresenterMode) {
+                updateSessionData(currentTempleIndex);
+            }
+        }
+        
+        // Setup presenter mode
+        function setupPresenterMode() {
+            isPresenterMode = true;
+            
+            // Create a new session
+            const newSessionId = createPresenterSession();
+            
+            // Show presenter controls
+            document.getElementById('presenter-controls').classList.remove('hidden');
+            
+            // Generate and display session info
+            const sessionIdInput = document.getElementById('presentation-session-id');
+            sessionIdInput.value = newSessionId;
+            
+            // Generate and display viewer URL
+            const baseUrl = window.location.href.split('?')[0];
+            const viewerUrl = `${baseUrl}?session=${newSessionId}`;
+            const urlInput = document.getElementById('presentation-url');
+            urlInput.value = viewerUrl;
+            
+            // Generate QR code
+            const qrcodeElement = document.getElementById('qrcode');
+            qrcodeElement.innerHTML = '';
+            new QRCode(qrcodeElement, {
+                text: viewerUrl,
+                width: 128,
+                height: 128
+            });
+            
+            // Show controls for presenter
+            document.getElementById('controls').classList.remove('hidden');
+        }
+        
+        // Setup viewer mode
+        function setupViewerMode() {
+            isPresenterMode = false;
+            
+            // Hide presenter controls and navigation controls
+            document.getElementById('presenter-controls').classList.add('hidden');
+            document.getElementById('controls').classList.add('hidden');
+            
+            // Start polling for updates
+            startPolling();
+        }
+        
+        // Poll for session updates
+        function startPolling() {
+            const pollInterval = setInterval(() => {
+                if (!sessionId) {
+                    clearInterval(pollInterval);
+                    return;
+                }
+                
+                const sessionData = getSessionData(sessionId);
+                
+                if (!sessionData || !sessionData.active) {
+                    // Session ended or doesn't exist
+                    showSessionEndedMessage();
+                    clearInterval(pollInterval);
+                    return;
+                }
+                
+                // Update slide if changed
+                if (sessionData.currentSlide !== currentTempleIndex) {
+                    currentTempleIndex = sessionData.currentSlide;
+                    showCurrentTemple();
+                }
+            }, 1000); // Poll every second
+        }
+        
+        // Show login screen
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('waiting-screen').classList.add('hidden');
+            document.getElementById('presentation-content').classList.add('hidden');
+        }
+        
+        // Show waiting screen
+        function showWaitingScreen() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('waiting-screen').classList.remove('hidden');
+            document.getElementById('presentation-content').classList.add('hidden');
+            
+            // Display session ID
+            document.getElementById('session-id-display').textContent = sessionId;
+        }
+        
+        // Show presentation content
+        function showPresentationContent() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('waiting-screen').classList.add('hidden');
+            document.getElementById('presentation-content').classList.remove('hidden');
+            
+            // Initialize temple display
+            showCurrentTemple();
+        }
+        
+        // Show session ended message
+        function showSessionEndedMessage() {
+            const waitingScreen = document.getElementById('waiting-screen');
+            waitingScreen.innerHTML = `
+                <div class="waiting-icon">⚠️</div>
+                <h2>Session Ended</h2>
+                <p>The presenter has ended this presentation session.</p>
+                <button id="return-home-btn" class="btn">Return to Home</button>
+            `;
+            waitingScreen.classList.remove('hidden');
+            document.getElementById('presentation-content').classList.add('hidden');
+            
+            // Add event listener to return home button
+            document.getElementById('return-home-btn').addEventListener('click', () => {
+                window.location.href = window.location.href.split('?')[0];
+            });
+        }
+        
+        // ====== Event Handlers ======
+        // Initialize the application
+        function initializeApp() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionParam = urlParams.get('session');
+            
+            document.getElementById('total-temples').textContent = temples.length;
+            
+            if (sessionParam) {
+                // Try to join as viewer
+                if (joinSession(sessionParam)) {
+                    // Session exists, show waiting screen
+                    sessionId = sessionParam;
+                    showWaitingScreen();
+                    
+                    // Check if session is active and has content
+                    const sessionData = getSessionData(sessionId);
+                    if (sessionData && sessionData.active) {
+                        currentTempleIndex = sessionData.currentSlide;
+                        setupViewerMode();
+                        showPresentationContent();
+                    }
+                } else {
+                    // Session doesn't exist
+                    showLoginScreen();
+                    alert('The presentation session has ended or does not exist.');
+                }
+            } else {
+                // Show login screen by default
+                showLoginScreen();
+            }
+        }
+        
+        // ====== Event Listeners ======
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            
+            // Login button click
+            document.getElementById('login-btn').addEventListener('click', function() {
+                const passwordInput = document.getElementById('password-input');
+                if (passwordInput.value === PRESENTER_PASSWORD) {
+                    setupPresenterMode();
+                    showPresentationContent();
+                } else {
+                    alert('Incorrect password. Please try again.');
+                }
+            });
+            
+            // Join session button click
+            document.getElementById('join-session-btn').addEventListener('click', function() {
+                const sessionInput = document.getElementById('session-input');
+                const inputSessionId = sessionInput.value.trim();
+                
+                if (inputSessionId && joinSession(inputSessionId)) {
+                    sessionId = inputSessionId;
+                    showWaitingScreen();
+                    
+                    // Check if session is active and has content
+                    const sessionData = getSessionData(sessionId);
+                    if (sessionData && sessionData.active) {
+                        currentTempleIndex = sessionData.currentSlide;
+                        setupViewerMode();
+                        showPresentationContent();
+                    }
+                } else {
+                    alert('Invalid session ID or the session has ended.');
+                }
+            });
+            
+            // Copy session ID button click
+            document.getElementById('copy-session-btn').addEventListener('click', function() {
+                const sessionIdInput = document.getElementById('presentation-session-id');
+                sessionIdInput.select();
+                document.execCommand('copy');
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy Session ID';
+                }, 2000);
+            });
+            
+            // Copy URL button click
+            document.getElementById('copy-url-btn').addEventListener('click', function() {
+                const urlInput = document.getElementById('presentation-url');
+                urlInput.select();
+                document.execCommand('copy');
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy Link';
+                }, 2000);
+            });
+            
+            // End session button click
+            document.getElementById('end-session-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to end this presentation session?')) {
+                    endSession();
+                    alert('Session ended. All viewers will be disconnected.');
+                    window.location.href = window.location.href.split('?')[0];
+                }
+            });
+            
+            // Previous button click
+            document.getElementById('prev-btn').addEventListener('click', function() {
+                if (currentTempleIndex > 0) {
+                    currentTempleIndex--;
+                    showCurrentTemple();
+                }
+            });
+            
+            // Next button click
+            document.getElementById('next-btn').addEventListener('click', function() {
+                if (currentTempleIndex < temples.length - 1) {
+                    currentTempleIndex++;
+                    showCurrentTemple();
+                }
+            });
+            
+            // Handle password input enter key
+            document.getElementById('password-input').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    document.getElementById('login-btn').click();
+                }
+            });
+            
+            // Handle session input enter key
+            document.getElementById('session-input').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    document.getElementById('join-session-btn').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
