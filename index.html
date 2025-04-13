@@ -69,10 +69,24 @@
         }
         .presenter-controls {
             background-color: #f0f0f0;
-            padding: 15px;
-            margin-top: 20px;
+            padding: 20px;
+            margin: 20px 0;
             border-radius: 8px;
+            border: 2px solid #8b4513;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .share-section {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
             border: 1px solid #ddd;
+        }
+        .share-title {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
         .btn {
             background-color: #8b4513;
@@ -535,21 +549,25 @@
             // Update interface for presenter view
             const mainContent = document.getElementById('main-content');
             mainContent.innerHTML = `
-                <h1>South Indian Temple Tour <small>(Presenter Mode)</small></h1>
-                
                 <div class="presenter-controls">
-                    <h3>Presenter Controls</h3>
-                    <p>Share this session ID with your audience:</p>
-                    <input type="text" id="presentation-session-id" value="${newSessionId}" readonly>
-                    <button id="copy-session-btn" class="btn copy-btn">Copy Session ID</button>
+                    <h3 style="color: #8b4513; text-align: center; margin-bottom: 20px;">Presenter Controls</h3>
                     
-                    <p>Or share this direct link:</p>
-                    <input type="text" id="presentation-url" value="${viewerUrl}" readonly>
-                    <button id="copy-url-btn" class="btn copy-btn">Copy Link</button>
+                    <div class="share-section">
+                        <div class="share-title">Share with your audience:</div>
+                        <p><strong>Session ID:</strong></p>
+                        <input type="text" id="presentation-session-id" value="${newSessionId}" readonly style="font-weight: bold; font-size: 1.1rem;">
+                        <button id="copy-session-btn" class="btn copy-btn">Copy Session ID</button>
+                        
+                        <p style="margin-top: 15px;"><strong>Direct Link:</strong></p>
+                        <input type="text" id="presentation-url" value="${viewerUrl}" readonly>
+                        <button id="copy-url-btn" class="btn copy-btn">Copy Link</button>
+                        
+                        <p style="margin-top: 15px;"><strong>QR Code:</strong></p>
+                        <div id="qrcode" style="margin: 10px auto; text-align: center; background: white; padding: 10px; width: fit-content;"></div>
+                    </div>
                     
-                    <div id="qrcode" style="margin-top: 15px; text-align: center;"></div>
-                    <p>Session Status: <span class="status-indicator status-active"></span> Active</p>
-                    <button id="end-session-btn" class="btn" style="background-color: #d9534f;">End Session</button>
+                    <p style="margin-top: 15px;">Session Status: <span class="status-indicator status-active"></span> <strong>Active</strong></p>
+                    <button id="end-session-btn" class="btn" style="background-color: #d9534f; margin-top: 10px;">End Session</button>
                 </div>
                 
                 <div id="temple-container"></div>
