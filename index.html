@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>South Indian Temple Tour</title>
+    <title>Knowvial Interactive Presentation</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,31 +24,31 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .temple-display {
+        .presentation-display {
             background-color: white;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .temple-image {
+        .slide-image {
             width: 100%;
             height: auto;
             border-radius: 8px;
             margin-bottom: 15px;
         }
-        .temple-name {
+        .slide-title {
             font-size: 1.5rem;
             color: #8b4513;
             margin-bottom: 10px;
             font-weight: bold;
         }
-        .location {
+        .slide-subtitle {
             font-style: italic;
             color: #666;
             margin-bottom: 10px;
         }
-        .description {
+        .slide-description {
             line-height: 1.6;
         }
         .key-facts {
@@ -125,6 +125,13 @@
             margin: 20px 0;
             border: 1px solid #ddd;
         }
+        .file-selector {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
         .animated-dots::after {
             content: '.';
             animation: dots 1.5s infinite;
@@ -138,7 +145,7 @@
 </head>
 <body>
     <div class="container" id="container">
-        <h1>South Indian Temple Tour</h1>
+        <h1 id="presentation-title">Presentation Tour</h1>
         <div id="content-area">
             <!-- Content will be populated by JavaScript -->
         </div>
@@ -146,99 +153,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        // Temple data
-        const temples = [
-            {
-                name: "Meenakshi Amman Temple",
-                location: "Madurai, Tamil Nadu",
-                image: "/api/placeholder/800/500",
-                description: "The Meenakshi Amman Temple is dedicated to goddess Meenakshi (a form of Parvati) and her consort, Sundareshwar (a form of Shiva). This magnificent temple is known for its towering gopurams (gateway towers) adorned with thousands of colorful sculptures.",
-                keyFacts: [
-                    "Features 14 gateway towers ranging from 45-50 meters in height",
-                    "The temple complex covers 45 acres",
-                    "Has a sacred tank called the Golden Lotus Tank (Porthamarai Kulam)",
-                    "The current structure dates mainly to the 16th-17th centuries"
-                ]
-            },
-            {
-                name: "Brihadeeswarar Temple",
-                location: "Thanjavur, Tamil Nadu",
-                image: "/api/placeholder/800/500",
-                description: "Also known as Peruvudaiyar Kovil, this temple is dedicated to Lord Shiva and was built by Raja Raja Chola I in the 11th century. It's a UNESCO World Heritage Site and one of the largest temples in India.",
-                keyFacts: [
-                    "The main vimana (tower) stands at 216 feet (66 meters) tall",
-                    "The temple is built entirely of granite with over 130,000 tons of granite used",
-                    "The main lingam is one of the largest in India, standing about 3.7 meters tall",
-                    "The temple's shadow never falls on the ground at noon"
-                ]
-            },
-            {
-                name: "Virupaksha Temple",
-                location: "Hampi, Karnataka",
-                image: "/api/placeholder/800/500",
-                description: "Dedicated to Lord Virupaksha, a form of Shiva, this is the oldest and principal temple in Hampi. The temple continues to prosper as an important pilgrimage center even after the fall of the Vijayanagara Empire.",
-                keyFacts: [
-                    "Temple history dates back to the 7th century",
-                    "The main gopuram stands 50 meters high",
-                    "Features exquisite stone carvings and impressive pillared halls",
-                    "Houses the shrine of Pampa, the local river goddess and consort of Virupaksha"
-                ]
-            },
-            {
-                name: "Ekambareswarar Temple",
-                location: "Kanchipuram, Tamil Nadu",
-                image: "/api/placeholder/800/500",
-                description: "This temple is dedicated to Shiva as Ekambareswarar (Lord of the Single Mango Tree). It is one of the Pancha Bhoota Stalas representing the element Earth and is known for its 3,500-year-old mango tree.",
-                keyFacts: [
-                    "Features a 59-meter high gopuram, one of the tallest temple towers in South India",
-                    "The temple complex covers 23 acres",
-                    "Contains 1,000 lingam sculptures",
-                    "The legendary mango tree is said to produce four different types of mangoes"
-                ]
-            },
-            {
-                name: "Annamalaiyar Temple",
-                location: "Tiruvannamalai, Tamil Nadu",
-                image: "/api/placeholder/800/500",
-                description: "Dedicated to Lord Shiva, this temple represents the element fire among the Pancha Bhoota Stalas. The temple is associated with the sacred hill Arunachala, which is considered a manifestation of Shiva himself.",
-                keyFacts: [
-                    "The main gopuram is 217 feet (66 meters) high",
-                    "The temple complex spans 25 acres",
-                    "During the Karthigai Deepam festival, a huge lamp is lit atop the Arunachala Hill",
-                    "The temple has been praised in the Tamil Tevaram hymns by saints Sambandar and Appar"
-                ]
-            },
-            {
-                name: "Ramanathaswamy Temple",
-                location: "Rameswaram, Tamil Nadu",
-                image: "/api/placeholder/800/500",
-                description: "This temple is dedicated to Lord Shiva and is significant as one of the twelve Jyotirlinga shrines. According to legend, Lord Rama worshipped Shiva here to cleanse himself of the sin of killing Ravana.",
-                keyFacts: [
-                    "Features the longest corridor among all Hindu temples, with 1,212 pillars",
-                    "Has 22 theerthams (holy water tanks) within the temple complex",
-                    "The main shrine houses a lingam that was installed by Lord Rama himself",
-                    "The temple's design follows Dravidian architecture with massive walls and gopurams"
-                ]
-            },
-            {
-                name: "Padmanabhaswamy Temple",
-                location: "Thiruvananthapuram, Kerala",
-                image: "/api/placeholder/800/500",
-                description: "This temple is dedicated to Lord Vishnu in the form of Padmanabha (one who emerges from the lotus) reclining on the serpent Anantha. The temple gained international attention for its vast treasure discovered in sealed vaults.",
-                keyFacts: [
-                    "The main deity is a 18-foot-long Vishnu in Anantha Shayanam posture",
-                    "The temple is built in a blend of Kerala and Dravidian architectural styles",
-                    "It's one of the 108 sacred Vishnu temples or Divya Desams",
-                    "The temple was controlled by the royal family of Travancore until recent times"
-                ]
-            }
-        ];
-
         // Application variables
-        let currentTempleIndex = 0;
+        let currentSlideIndex = 0;
         let isPresenterMode = false;
         let sessionId = null;
-        const PRESENTER_PASSWORD = "temple123";
+        let presentationData = null;
+        let presentationTitle = "Presentation Tour";
+        const PRESENTER_PASSWORD = "Rbotla123";
 
         // Function to generate a unique session ID
         function generateSessionId() {
@@ -251,9 +172,10 @@
             const sessionData = {
                 active: true,
                 currentSlide: 0,
-                lastUpdated: new Date().getTime()
+                lastUpdated: new Date().getTime(),
+                contentFile: contentFileName
             };
-            localStorage.setItem('temple-session-' + newSessionId, JSON.stringify(sessionData));
+            localStorage.setItem('presentation-session-' + newSessionId, JSON.stringify(sessionData));
             return newSessionId;
         }
 
@@ -263,47 +185,92 @@
                 const sessionData = {
                     active: true,
                     currentSlide: slideIndex,
-                    lastUpdated: new Date().getTime()
+                    lastUpdated: new Date().getTime(),
+                    contentFile: contentFileName
                 };
-                localStorage.setItem('temple-session-' + sessionId, JSON.stringify(sessionData));
+                localStorage.setItem('presentation-session-' + sessionId, JSON.stringify(sessionData));
             }
         }
 
         // Function to get session data
         function getSessionData(sid) {
-            const data = localStorage.getItem('temple-session-' + sid);
+            const data = localStorage.getItem('presentation-session-' + sid);
             return data ? JSON.parse(data) : null;
         }
 
         // Function to end a session
         function endSession() {
             if (sessionId) {
-                localStorage.removeItem('temple-session-' + sessionId);
+                localStorage.removeItem('presentation-session-' + sessionId);
             }
         }
 
-        // Function to show a temple
-        function showTemple(index) {
-            const temple = temples[index];
-            const templeHTML = `
-                <div class="temple-display">
-                    <img src="${temple.image}" alt="${temple.name}" class="temple-image">
-                    <div class="temple-name">${temple.name}</div>
-                    <div class="location">${temple.location}</div>
-                    <div class="description">${temple.description}</div>
-                    <div class="key-facts">
-                        <h3>Key Facts</h3>
-                        <ul>
-                            ${temple.keyFacts.map(fact => `<li>${fact}</li>`).join('')}
-                        </ul>
-                    </div>
+        // Default content file name, can be overridden
+        let contentFileName = "presentation-content.json";
+
+        // Function to load presentation data
+        async function loadPresentationData(fileName) {
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) {
+                    throw new Error(`Failed to load data: ${response.status}`);
+                }
+                const data = await response.json();
+                presentationData = data;
+                
+                // Update page title
+                presentationTitle = data.title || "Presentation Tour";
+                document.getElementById('presentation-title').textContent = presentationTitle;
+                document.title = presentationTitle;
+                
+                return data;
+            } catch (error) {
+                console.error("Error loading presentation data:", error);
+                alert("Failed to load presentation data. Please check if the content file exists and is correctly formatted.");
+                return null;
+            }
+        }
+
+        // Function to show a slide
+        function showSlide(index) {
+            if (!presentationData || !presentationData.slides || presentationData.slides.length === 0) {
+                return '<div class="presentation-display"><p>No presentation data available</p></div>';
+            }
+
+            const slide = presentationData.slides[index];
+            
+            // Handle multiple images if available
+            let imageHTML = '';
+            if (Array.isArray(slide.images) && slide.images.length > 0) {
+                // If multiple images, show the current one based on some logic
+                // For simplicity, we'll just show the first image here
+                imageHTML = `<img src="${slide.images[0]}" alt="${slide.title}" class="slide-image">`;
+            } else if (slide.image) {
+                // Single image
+                imageHTML = `<img src="${slide.image}" alt="${slide.title}" class="slide-image">`;
+            }
+
+            const slideHTML = `
+                <div class="presentation-display">
+                    ${imageHTML}
+                    <div class="slide-title">${slide.title || ''}</div>
+                    <div class="slide-subtitle">${slide.subtitle || ''}</div>
+                    <div class="slide-description">${slide.description || ''}</div>
+                    ${slide.keyFacts && slide.keyFacts.length > 0 ? `
+                        <div class="key-facts">
+                            <h3>${slide.factsTitle || 'Key Facts'}</h3>
+                            <ul>
+                                ${slide.keyFacts.map(fact => `<li>${fact}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
                 </div>
             `;
-            return templeHTML;
+            return slideHTML;
         }
 
         // Function to show the presenter interface
-        function showPresenterInterface() {
+        async function showPresenterInterface() {
             if (!sessionId) {
                 sessionId = createSession();
             }
@@ -316,6 +283,16 @@
                 <div class="presenter-bar">
                     <h2 style="margin: 0;">Presenter Mode</h2>
                     <div>Session ID: <strong>${sessionId}</strong></div>
+                </div>
+
+                <div class="file-selector">
+                    <h3>Presentation Content</h3>
+                    <p>Current content file: <strong id="current-file-name">${contentFileName}</strong></p>
+                    <div class="form-group">
+                        <label for="content-file-input">Change content file:</label>
+                        <input type="text" id="content-file-input" placeholder="Enter JSON file name" value="${contentFileName}">
+                        <button id="load-content-btn" class="btn">Load Content</button>
+                    </div>
                 </div>
 
                 <div class="share-section">
@@ -331,19 +308,26 @@
                     <div id="qrcode" style="margin: 15px auto; text-align: center;"></div>
                 </div>
 
-                ${showTemple(currentTempleIndex)}
+                <div id="slide-container">Loading slide...</div>
 
                 <div class="controls">
-                    <button id="prev-btn" class="btn" ${currentTempleIndex === 0 ? 'disabled' : ''}>⬅️ Previous</button>
+                    <button id="prev-btn" class="btn" ${currentSlideIndex === 0 ? 'disabled' : ''}>⬅️ Previous</button>
                     <div style="align-self: center;">
-                        <span id="temple-counter">${currentTempleIndex + 1}</span> of ${temples.length}
+                        <span id="slide-counter">${currentSlideIndex + 1}</span> of <span id="total-slides">...</span>
                     </div>
-                    <button id="next-btn" class="btn" ${currentTempleIndex === temples.length - 1 ? 'disabled' : ''}>Next ➡️</button>
+                    <button id="next-btn" class="btn">Next ➡️</button>
                 </div>
 
                 <button id="end-session-btn" class="btn" style="background-color: #d9534f; width: 100%; margin-top: 20px;">End Session</button>
             `;
 
+            // Load presentation data
+            await loadPresentationData(contentFileName);
+            
+            // Update slide display
+            document.getElementById('slide-container').innerHTML = showSlide(currentSlideIndex);
+            document.getElementById('total-slides').textContent = presentationData.slides.length;
+            
             // Generate QR code
             new QRCode(document.getElementById("qrcode"), {
                 text: viewerUrl,
@@ -372,17 +356,32 @@
                 }, 2000);
             });
 
+            document.getElementById('load-content-btn').addEventListener('click', async function() {
+                const newFileName = document.getElementById('content-file-input').value.trim();
+                if (newFileName) {
+                    contentFileName = newFileName;
+                    document.getElementById('current-file-name').textContent = contentFileName;
+                    await loadPresentationData(contentFileName);
+                    currentSlideIndex = 0;
+                    navigateToSlide(0);
+                    // Update session data with new content file
+                    updateSession(currentSlideIndex);
+                } else {
+                    alert("Please enter a valid file name");
+                }
+            });
+
             document.getElementById('prev-btn').addEventListener('click', function() {
-                if (currentTempleIndex > 0) {
-                    currentTempleIndex--;
-                    navigateToTemple(currentTempleIndex);
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    navigateToSlide(currentSlideIndex);
                 }
             });
 
             document.getElementById('next-btn').addEventListener('click', function() {
-                if (currentTempleIndex < temples.length - 1) {
-                    currentTempleIndex++;
-                    navigateToTemple(currentTempleIndex);
+                if (presentationData && presentationData.slides && currentSlideIndex < presentationData.slides.length - 1) {
+                    currentSlideIndex++;
+                    navigateToSlide(currentSlideIndex);
                 }
             });
 
@@ -395,35 +394,45 @@
         }
 
         // Function to show the viewer interface
-        function showViewerInterface() {
+        async function showViewerInterface() {
+            // Get session data to find out which content file to load
+            const sessionData = getSessionData(sessionId);
+            if (sessionData && sessionData.contentFile) {
+                contentFileName = sessionData.contentFile;
+            }
+            
+            // Load presentation data
+            await loadPresentationData(contentFileName);
+            
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = `
-                ${showTemple(currentTempleIndex)}
+                <div id="slide-container">${showSlide(currentSlideIndex)}</div>
                 <div style="text-align: center; margin-top: 20px;">
-                    Temple <span id="temple-counter">${currentTempleIndex + 1}</span> of ${temples.length}
+                    Slide <span id="slide-counter">${currentSlideIndex + 1}</span> of ${presentationData.slides.length}
                 </div>
             `;
         }
 
-        // Function to navigate to a specific temple
-        function navigateToTemple(index) {
-            currentTempleIndex = index;
+        // Function to navigate to a specific slide
+        function navigateToSlide(index) {
+            currentSlideIndex = index;
             
             if (isPresenterMode) {
                 // Update for presenter
-                const templeDisplay = document.querySelector('.temple-display');
-                templeDisplay.outerHTML = showTemple(index);
-                
-                document.getElementById('temple-counter').textContent = index + 1;
+                document.getElementById('slide-container').innerHTML = showSlide(index);
+                document.getElementById('slide-counter').textContent = index + 1;
                 
                 document.getElementById('prev-btn').disabled = index === 0;
-                document.getElementById('next-btn').disabled = index === temples.length - 1;
+                document.getElementById('next-btn').disabled = 
+                    !presentationData || !presentationData.slides || 
+                    index >= presentationData.slides.length - 1;
                 
                 // Update session data
                 updateSession(index);
             } else {
                 // Update for viewer
-                showViewerInterface();
+                document.getElementById('slide-container').innerHTML = showSlide(index);
+                document.getElementById('slide-counter').textContent = index + 1;
             }
         }
 
@@ -444,6 +453,11 @@
             const contentArea = document.getElementById('content-area');
             contentArea.innerHTML = `
                 <div class="login-container">
+                    <div class="form-group">
+                        <label for="content-file-select">Presentation Content:</label>
+                        <input type="text" id="content-file-select" placeholder="Enter JSON file name" value="${contentFileName}">
+                    </div>
+                    
                     <button id="presenter-btn" class="btn" style="margin-bottom: 30px; width: 100%;">Start as Presenter</button>
                     
                     <h3>Join Existing Presentation</h3>
@@ -456,11 +470,16 @@
 
             // Add event listeners
             document.getElementById('presenter-btn').addEventListener('click', function() {
+                const selectedFile = document.getElementById('content-file-select').value.trim();
+                if (selectedFile) {
+                    contentFileName = selectedFile;
+                }
+                
                 const password = prompt("Enter presenter password:");
                 if (password === PRESENTER_PASSWORD) {
                     isPresenterMode = true;
                     sessionId = createSession();
-                    window.location.href = `${window.location.href.split('?')[0]}?presenter=${password}&session=${sessionId}`;
+                    window.location.href = `${window.location.href.split('?')[0]}?presenter=${password}&session=${sessionId}&content=${encodeURIComponent(contentFileName)}`;
                 } else {
                     alert("Incorrect password");
                 }
@@ -509,25 +528,47 @@
                     return;
                 }
                 
+                // Check if content file has changed
+                if (sessionData.contentFile && sessionData.contentFile !== contentFileName) {
+                    contentFileName = sessionData.contentFile;
+                    // Reload presentation data and update view
+                    loadPresentationData(contentFileName).then(() => {
+                        currentSlideIndex = sessionData.currentSlide;
+                        showViewerInterface();
+                    });
+                    return;
+                }
+                
                 // Update current slide if changed
-                if (sessionData.currentSlide !== currentTempleIndex) {
-                    currentTempleIndex = sessionData.currentSlide;
-                    showViewerInterface();
+                if (sessionData.currentSlide !== currentSlideIndex) {
+                    currentSlideIndex = sessionData.currentSlide;
+                    if (document.getElementById('slide-container')) {
+                        document.getElementById('slide-container').innerHTML = showSlide(currentSlideIndex);
+                        document.getElementById('slide-counter').textContent = currentSlideIndex + 1;
+                    } else {
+                        showViewerInterface();
+                    }
                 }
             }, 1000);
         }
 
         // Initialize the application
-        function initApp() {
+        async function initApp() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionParam = urlParams.get('session');
             const presenterParam = urlParams.get('presenter');
+            const contentParam = urlParams.get('content');
+            
+            // Override content file if specified in URL
+            if (contentParam) {
+                contentFileName = decodeURIComponent(contentParam);
+            }
 
             if (presenterParam === PRESENTER_PASSWORD && sessionParam) {
                 // Presenter mode with existing session
                 isPresenterMode = true;
                 sessionId = sessionParam;
-                showPresenterInterface();
+                await showPresenterInterface();
                 return;
             }
 
@@ -536,10 +577,14 @@
                 sessionId = sessionParam;
                 const sessionData = getSessionData(sessionId);
                 
+                if (sessionData && sessionData.contentFile) {
+                    contentFileName = sessionData.contentFile;
+                }
+                
                 if (sessionData && sessionData.active) {
                     // Session exists and is active
-                    currentTempleIndex = sessionData.currentSlide;
-                    showViewerInterface();
+                    currentSlideIndex = sessionData.currentSlide;
+                    await showViewerInterface();
                     startPolling();
                 } else {
                     // Session doesn't exist yet or is not active
