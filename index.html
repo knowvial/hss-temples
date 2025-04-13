@@ -510,6 +510,19 @@
                 document.getElementById('quick-presenter-btn').addEventListener('click', () => {
                     const password = prompt("Enter presenter password:");
                     if (password === PRESENTER_PASSWORD) {
+                        // Create session immediately
+                        isPresenterMode = true;
+                        const newSessionId = createPresenterSession();
+                        sessionId = newSessionId;
+                        
+                        // Generate viewer direct URL
+                        const baseUrl = window.location.href.split('?')[0];
+                        const viewerUrl = `${baseUrl}?session=${newSessionId}&direct=true`;
+                        
+                        // Show session info in an alert to ensure visibility
+                        alert(`Your session is ready!\n\nSession ID: ${newSessionId}\n\nShare this with your audience.`);
+                        
+                        // Continue to presenter mode
                         setupPresenterMode();
                         showPresentation();
                     } else {
