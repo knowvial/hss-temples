@@ -382,11 +382,23 @@
         
         // Join existing session as viewer
         function joinSession(id) {
-            if (checkSessionStatus(id)) {
-                sessionId = id;
-                return true;
+            // Try to get session data first before determining if it exists
+            const sessionData = localStorage.getItem('temple-session-' + id);
+            
+            // For testing purposes, always allow connection even if session is not found yet
+            // This helps when presenter hasn't fully initialized the session
+            if (sessionData === null) {
+                // Create a temporary placeholder for this session to avoid errors
+                const tempData = {
+                    active: true,
+                    currentSlide: 0,
+                    lastUpdated: new Date().getTime(),
+                    pending: true  // Mark as pending until real data appears
+                };
+                localStorage.setItem('temple-session-' + id, JSON.stringify(tempData));
             }
-            return false;
+            
+            return true; // Always return true to allow connection attempt
         }
         
         // Update session data
@@ -494,8 +506,89 @@
                 height: 128
             });
             
-            // Show controls for presenter
-            document.getElementById('controls').classList.remove('hidden');
+            // Update interface for presenter view
+            document.querySelector('.container').innerHTML = `
+                <h1>South Indian Temple Tour <small>(Presenter Mode)</small></h1>
+                
+                <div class="presenter-controls">
+                    <h3>Presenter Controls</h3>
+                    <p>Share this session ID with your audience:</p>
+                    <input type="text" id="presentation-session-id" value="${newSessionId}" readonly>
+                    <button id="copy-session-btn" class="btn copy-btn">Copy Session ID</button>
+                    
+                    <p>Or share this direct link:</p>
+                    <input type="text" id="presentation-url" value="${viewerUrl}" readonly>
+                    <button id="copy-url-btn" class="btn copy-btn">Copy Link</button>
+                    
+                    <div id="qrcode" style="margin-top: 15px; text-align: center;"></div>
+                    <p>Session Status: <span class="status-indicator status-active"></span> Active</p>
+                    <button id="end-session-btn" class="btn" style="background-color: #d9534f;">End Session</button>
+                </div>
+                
+                <div id="temple-container"></div>
+                
+                <div class="controls">
+                    <button id="prev-btn" class="btn" disabled>Previous</button>
+                    <button id="next-btn" class="btn">Next</button>
+                </div>
+                
+                <div class="progress">
+                    Temple <span id="current-index">1</span> of <span id="total-temples">${temples.length}</span>
+                </div>
+            `;
+            
+            // Regenerate the QR code in the new DOM
+            setTimeout(() => {
+                const newQrcode = document.getElementById('qrcode');
+                new QRCode(newQrcode, {
+                    text: viewerUrl,
+                    width: 128,
+                    height: 128
+                });
+                
+                // Re-add event listeners for the new DOM elements
+                document.getElementById('copy-session-btn').addEventListener('click', function() {
+                    const sessionIdInput = document.getElementById('presentation-session-id');
+                    sessionIdInput.select();
+                    document.execCommand('copy');
+                    this.textContent = 'Copied!';
+                    setTimeout(() => {
+                        this.textContent = 'Copy Session ID';
+                    }, 2000);
+                });
+                
+                document.getElementById('copy-url-btn').addEventListener('click', function() {
+                    const urlInput = document.getElementById('presentation-url');
+                    urlInput.select();
+                    document.execCommand('copy');
+                    this.textContent = 'Copied!';
+                    setTimeout(() => {
+                        this.textContent = 'Copy Link';
+                    }, 2000);
+                });
+                
+                document.getElementById('end-session-btn').addEventListener('click', function() {
+                    if (confirm('Are you sure you want to end this presentation session?')) {
+                        endSession();
+                        alert('Session ended. All viewers will be disconnected.');
+                        window.location.href = window.location.href.split('?')[0];
+                    }
+                });
+                
+                document.getElementById('prev-btn').addEventListener('click', function() {
+                    if (currentTempleIndex > 0) {
+                        currentTempleIndex--;
+                        showCurrentTemple();
+                    }
+                });
+                
+                document.getElementById('next-btn').addEventListener('click', function() {
+                    if (currentTempleIndex < temples.length - 1) {
+                        currentTempleIndex++;
+                        showCurrentTemple();
+                    }
+                });
+            }, 100);
         }
         
         // Setup viewer mode
@@ -520,15 +613,20 @@
                 
                 const sessionData = getSessionData(sessionId);
                 
-                if (!sessionData || !sessionData.active) {
-                    // Session ended or doesn't exist
+                if (!sessionData) {
+                    // No data yet, keep waiting
+                    return;
+                }
+                
+                if (!sessionData.active && !sessionData.pending) {
+                    // Session ended
                     showSessionEndedMessage();
                     clearInterval(pollInterval);
                     return;
                 }
                 
-                // Update slide if changed
-                if (sessionData.currentSlide !== currentTempleIndex) {
+                // Update slide if changed (and avoid updating if it's marked as pending)
+                if (!sessionData.pending && sessionData.currentSlide !== currentTempleIndex) {
                     currentTempleIndex = sessionData.currentSlide;
                     showCurrentTemple();
                 }
@@ -598,41 +696,106 @@
             }
             
             if (sessionParam) {
-                // Try to join as viewer
+                // Always try to join as viewer without showing error messages
                 if (joinSession(sessionParam)) {
-                    // Session exists
                     sessionId = sessionParam;
                     
-                    // Direct access without waiting screen if parameter is set
-                    if (directParam === 'true') {
-                        const sessionData = getSessionData(sessionId);
-                        if (sessionData && sessionData.active) {
-                            currentTempleIndex = sessionData.currentSlide;
-                            setupViewerMode();
-                            showPresentationContent();
-                            return;
-                        }
-                    }
-                    
-                    // Otherwise show waiting screen
-                    showWaitingScreen();
-                    
-                    // Check if session is active and has content
+                    // Direct access is now the default - skip waiting screen
                     const sessionData = getSessionData(sessionId);
-                    if (sessionData && sessionData.active) {
-                        currentTempleIndex = sessionData.currentSlide;
+                    if (sessionData) {
+                        // Session exists, try to connect
+                        currentTempleIndex = sessionData.currentSlide || 0;
                         setupViewerMode();
                         showPresentationContent();
+                    } else {
+                        // Session doesn't exist yet, but might soon - show streamlined waiting
+                        showStreamlinedWaiting(sessionId);
                     }
-                } else {
-                    // Session doesn't exist
-                    showLoginScreen();
-                    alert('The presentation session has ended or does not exist.');
                 }
             } else {
-                // Show login screen by default
-                showLoginScreen();
+                // Simplified login screen by default
+                showSimplifiedLogin();
             }
+        }
+        
+        // Show streamlined waiting screen
+        function showStreamlinedWaiting(sid) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('presentation-content').classList.add('hidden');
+            
+            // Create a more minimal waiting screen
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <h1>South Indian Temple Tour</h1>
+                <div class="waiting-screen">
+                    <h2>Connecting to presentation...</h2>
+                    <p class="animated-dots">Waiting for presenter</p>
+                    <p>Session ID: ${sid}</p>
+                </div>
+            `;
+            
+            // Start polling for session to become available
+            const waitInterval = setInterval(() => {
+                const sessionData = getSessionData(sid);
+                if (sessionData && !sessionData.pending) {
+                    clearInterval(waitInterval);
+                    window.location.reload(); // Simplest way to reconnect properly
+                }
+            }, 1500);
+        }
+        
+        // Show simplified login screen
+        function showSimplifiedLogin() {
+            document.getElementById('waiting-screen').classList.add('hidden');
+            document.getElementById('presentation-content').classList.add('hidden');
+            
+            // Create a simplified login screen
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <h1>South Indian Temple Tour</h1>
+                <div class="login-container">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <button id="quick-presenter-btn" class="btn">Start as Presenter</button>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <h3>Join Existing Presentation</h3>
+                        <div class="form-group">
+                            <input type="text" id="quick-session-input" placeholder="Enter session ID">
+                        </div>
+                        <button id="quick-join-btn" class="btn">Join</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners for new buttons
+            setTimeout(() => {
+                document.getElementById('quick-presenter-btn').addEventListener('click', () => {
+                    const password = prompt("Enter presenter password:");
+                    if (password === PRESENTER_PASSWORD) {
+                        setupPresenterMode();
+                        showPresentationContent();
+                    } else {
+                        alert("Incorrect password");
+                    }
+                });
+                
+                document.getElementById('quick-join-btn').addEventListener('click', () => {
+                    const sid = document.getElementById('quick-session-input').value.trim();
+                    if (sid) {
+                        window.location.href = `${window.location.href.split('?')[0]}?session=${sid}&direct=true`;
+                    } else {
+                        alert("Please enter a session ID");
+                    }
+                });
+                
+                document.getElementById('quick-session-input').addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        document.getElementById('quick-join-btn').click();
+                    }
+                });
+            }, 100);
+        }
         }
         
         // ====== Event Listeners ======
