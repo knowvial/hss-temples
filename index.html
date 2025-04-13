@@ -17,9 +17,11 @@
             margin: 0 auto;
             padding: 20px;
         }
+        h1, h2, h3 {
+            color: #8b4513;
+        }
         h1 {
             text-align: center;
-            color: #8b4513;
             margin-bottom: 30px;
         }
         .temple-display {
@@ -34,9 +36,6 @@
             height: auto;
             border-radius: 8px;
             margin-bottom: 15px;
-        }
-        .temple-info {
-            margin-bottom: 20px;
         }
         .temple-name {
             font-size: 1.5rem;
@@ -58,35 +57,13 @@
             border-radius: 8px;
             margin-top: 15px;
         }
-        .key-facts h3 {
-            margin-top: 0;
-            color: #8b4513;
-        }
         .controls {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-        }
-        .presenter-controls {
-            background-color: #f0f0f0;
-            padding: 20px;
             margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
             border-radius: 8px;
-            border: 2px solid #8b4513;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .share-section {
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #fafafa;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        .share-title {
-            font-size: 1.2rem;
-            color: #8b4513;
-            margin-bottom: 10px;
-            font-weight: bold;
         }
         .btn {
             background-color: #8b4513;
@@ -105,17 +82,9 @@
             background-color: #cccccc;
             cursor: not-allowed;
         }
-        .progress {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-        }
-        .hidden {
-            display: none;
-        }
         .login-container {
             max-width: 400px;
-            margin: 100px auto;
+            margin: 80px auto;
             background-color: white;
             padding: 30px;
             border-radius: 10px;
@@ -130,18 +99,8 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             margin-top: 50px;
         }
-        .waiting-icon {
-            font-size: 3rem;
-            color: #8b4513;
-            margin-bottom: 20px;
-        }
         .form-group {
             margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
         }
         input {
             width: 100%;
@@ -149,57 +108,25 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1rem;
+            margin-bottom: 10px;
         }
-        .mode-toggle {
+        .presenter-bar {
+            background-color: #8b4513;
+            color: white;
+            padding: 10px;
             text-align: center;
+            border-radius: 5px;
             margin-bottom: 20px;
         }
-        #presentation-url {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .copy-btn {
-            margin-top: 10px;
-            background-color: #4a6da7;
-        }
-        #qrcode {
-            text-align: center;
-            margin-top: 15px;
-        }
-        @media (max-width: 600px) {
-            .temple-display {
-                padding: 15px;
-            }
-            .btn {
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-        }
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        .status-active {
-            background-color: #4CAF50;
-        }
-        .status-waiting {
-            background-color: #FF9800;
-        }
-        .session-info {
+        .share-section {
             background-color: #f9f9f9;
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin: 20px 0;
+            border: 1px solid #ddd;
         }
         .animated-dots::after {
-            content: '';
+            content: '.';
             animation: dots 1.5s infinite;
         }
         @keyframes dots {
@@ -210,22 +137,21 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="container">
         <h1>South Indian Temple Tour</h1>
-        
-        <div id="main-content">
-            <!-- Content will be dynamically inserted here -->
+        <div id="content-area">
+            <!-- Content will be populated by JavaScript -->
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        // ====== Temple Data ======
+        // Temple data
         const temples = [
             {
                 name: "Meenakshi Amman Temple",
                 location: "Madurai, Tamil Nadu",
-                image: "/api/placeholder/800/500", // Replace with actual image URL in a real implementation
+                image: "/api/placeholder/800/500",
                 description: "The Meenakshi Amman Temple is dedicated to goddess Meenakshi (a form of Parvati) and her consort, Sundareshwar (a form of Shiva). This magnificent temple is known for its towering gopurams (gateway towers) adorned with thousands of colorful sculptures.",
                 keyFacts: [
                     "Features 14 gateway towers ranging from 45-50 meters in height",
@@ -308,56 +234,32 @@
             }
         ];
 
-        // ====== Application Variables ======
+        // Application variables
         let currentTempleIndex = 0;
         let isPresenterMode = false;
         let sessionId = null;
-        
-        // The presenter password - in a real application, this would be securely stored
-        const PRESENTER_PASSWORD = "temple123"; // You can change this to any password you prefer
-        
-        // ====== Session Management ======
-        // Generate a unique session ID
+        const PRESENTER_PASSWORD = "temple123";
+
+        // Function to generate a unique session ID
         function generateSessionId() {
             return 'session-' + Math.random().toString(36).substr(2, 9);
         }
-        
-        // Create a new presenter session
-        function createPresenterSession() {
-            sessionId = generateSessionId();
+
+        // Function to create a new session
+        function createSession() {
+            const newSessionId = generateSessionId();
             const sessionData = {
                 active: true,
                 currentSlide: 0,
                 lastUpdated: new Date().getTime()
             };
-            localStorage.setItem('temple-session-' + sessionId, JSON.stringify(sessionData));
-            return sessionId;
+            localStorage.setItem('temple-session-' + newSessionId, JSON.stringify(sessionData));
+            return newSessionId;
         }
-        
-        // Join existing session as viewer
-        function joinSession(id) {
-            // Try to get session data first before determining if it exists
-            const sessionData = localStorage.getItem('temple-session-' + id);
-            
-            // For testing purposes, always allow connection even if session is not found yet
-            // This helps when presenter hasn't fully initialized the session
-            if (sessionData === null) {
-                // Create a temporary placeholder for this session to avoid errors
-                const tempData = {
-                    active: true,
-                    currentSlide: 0,
-                    lastUpdated: new Date().getTime(),
-                    pending: true  // Mark as pending until real data appears
-                };
-                localStorage.setItem('temple-session-' + id, JSON.stringify(tempData));
-            }
-            
-            return true; // Always return true to allow connection attempt
-        }
-        
-        // Update session data
-        function updateSessionData(slideIndex) {
-            if (sessionId && isPresenterMode) {
+
+        // Function to update session data
+        function updateSession(slideIndex) {
+            if (sessionId) {
                 const sessionData = {
                     active: true,
                     currentSlide: slideIndex,
@@ -366,372 +268,293 @@
                 localStorage.setItem('temple-session-' + sessionId, JSON.stringify(sessionData));
             }
         }
-        
-        // Get current session data
-        function getSessionData(id) {
-            const data = localStorage.getItem('temple-session-' + id);
+
+        // Function to get session data
+        function getSessionData(sid) {
+            const data = localStorage.getItem('temple-session-' + sid);
             return data ? JSON.parse(data) : null;
         }
-        
-        // End session
+
+        // Function to end a session
         function endSession() {
-            if (sessionId && isPresenterMode) {
+            if (sessionId) {
                 localStorage.removeItem('temple-session-' + sessionId);
-                return true;
             }
-            return false;
         }
-        
-        // ====== UI Functions ======
-        // Show the current temple
-        function showCurrentTemple() {
-            const temple = temples[currentTempleIndex];
-            const templeContainerEl = document.getElementById('temple-container');
-            const currentIndexEl = document.getElementById('current-index');
-            
-            if (!templeContainerEl || !currentIndexEl) return;
-            
-            // Create temple display HTML
-            let templeHTML = `
+
+        // Function to show a temple
+        function showTemple(index) {
+            const temple = temples[index];
+            const templeHTML = `
                 <div class="temple-display">
                     <img src="${temple.image}" alt="${temple.name}" class="temple-image">
-                    <div class="temple-info">
-                        <div class="temple-name">${temple.name}</div>
-                        <div class="location">${temple.location}</div>
-                        <div class="description">${temple.description}</div>
-                        <div class="key-facts">
-                            <h3>Key Facts</h3>
-                            <ul>
-            `;
-            
-            // Add key facts to the HTML
-            temple.keyFacts.forEach(fact => {
-                templeHTML += `<li>${fact}</li>`;
-            });
-            
-            templeHTML += `
-                            </ul>
-                        </div>
+                    <div class="temple-name">${temple.name}</div>
+                    <div class="location">${temple.location}</div>
+                    <div class="description">${temple.description}</div>
+                    <div class="key-facts">
+                        <h3>Key Facts</h3>
+                        <ul>
+                            ${temple.keyFacts.map(fact => `<li>${fact}</li>`).join('')}
+                        </ul>
                     </div>
                 </div>
             `;
-            
-            // Update the DOM
-            templeContainerEl.innerHTML = templeHTML;
-            currentIndexEl.textContent = currentTempleIndex + 1;
-            
-            // Update navigation buttons
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            
-            if (prevBtn && nextBtn) {
-                prevBtn.disabled = currentTempleIndex === 0;
-                nextBtn.disabled = currentTempleIndex === temples.length - 1;
+            return templeHTML;
+        }
+
+        // Function to show the presenter interface
+        function showPresenterInterface() {
+            if (!sessionId) {
+                sessionId = createSession();
             }
+
+            const baseUrl = window.location.href.split('?')[0];
+            const viewerUrl = `${baseUrl}?session=${sessionId}&direct=true`;
+
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `
+                <div class="presenter-bar">
+                    <h2 style="margin: 0;">Presenter Mode</h2>
+                    <div>Session ID: <strong>${sessionId}</strong></div>
+                </div>
+
+                <div class="share-section">
+                    <h3>Share With Your Audience</h3>
+                    <p><strong>Direct Link:</strong></p>
+                    <input type="text" id="share-url" value="${viewerUrl}" readonly>
+                    <button id="copy-url-btn" class="btn">Copy Link</button>
+
+                    <p><strong>Session ID:</strong></p>
+                    <input type="text" id="share-id" value="${sessionId}" readonly>
+                    <button id="copy-id-btn" class="btn">Copy ID</button>
+
+                    <div id="qrcode" style="margin: 15px auto; text-align: center;"></div>
+                </div>
+
+                ${showTemple(currentTempleIndex)}
+
+                <div class="controls">
+                    <button id="prev-btn" class="btn" ${currentTempleIndex === 0 ? 'disabled' : ''}>⬅️ Previous</button>
+                    <div style="align-self: center;">
+                        <span id="temple-counter">${currentTempleIndex + 1}</span> of ${temples.length}
+                    </div>
+                    <button id="next-btn" class="btn" ${currentTempleIndex === temples.length - 1 ? 'disabled' : ''}>Next ➡️</button>
+                </div>
+
+                <button id="end-session-btn" class="btn" style="background-color: #d9534f; width: 100%; margin-top: 20px;">End Session</button>
+            `;
+
+            // Generate QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: viewerUrl,
+                width: 128,
+                height: 128
+            });
+
+            // Add event listeners
+            document.getElementById('copy-url-btn').addEventListener('click', function() {
+                const input = document.getElementById('share-url');
+                input.select();
+                document.execCommand('copy');
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy Link';
+                }, 2000);
+            });
+
+            document.getElementById('copy-id-btn').addEventListener('click', function() {
+                const input = document.getElementById('share-id');
+                input.select();
+                document.execCommand('copy');
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy ID';
+                }, 2000);
+            });
+
+            document.getElementById('prev-btn').addEventListener('click', function() {
+                if (currentTempleIndex > 0) {
+                    currentTempleIndex--;
+                    navigateToTemple(currentTempleIndex);
+                }
+            });
+
+            document.getElementById('next-btn').addEventListener('click', function() {
+                if (currentTempleIndex < temples.length - 1) {
+                    currentTempleIndex++;
+                    navigateToTemple(currentTempleIndex);
+                }
+            });
+
+            document.getElementById('end-session-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to end this presentation session?')) {
+                    endSession();
+                    window.location.href = baseUrl;
+                }
+            });
+        }
+
+        // Function to show the viewer interface
+        function showViewerInterface() {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `
+                ${showTemple(currentTempleIndex)}
+                <div style="text-align: center; margin-top: 20px;">
+                    Temple <span id="temple-counter">${currentTempleIndex + 1}</span> of ${temples.length}
+                </div>
+            `;
+        }
+
+        // Function to navigate to a specific temple
+        function navigateToTemple(index) {
+            currentTempleIndex = index;
             
-            // If in presenter mode, update the session data
             if (isPresenterMode) {
-                updateSessionData(currentTempleIndex);
+                // Update for presenter
+                const templeDisplay = document.querySelector('.temple-display');
+                templeDisplay.outerHTML = showTemple(index);
+                
+                document.getElementById('temple-counter').textContent = index + 1;
+                
+                document.getElementById('prev-btn').disabled = index === 0;
+                document.getElementById('next-btn').disabled = index === temples.length - 1;
+                
+                // Update session data
+                updateSession(index);
+            } else {
+                // Update for viewer
+                showViewerInterface();
             }
         }
-        
-        // Poll for session updates
-        function startPolling() {
-            const pollInterval = setInterval(() => {
-                if (!sessionId) {
-                    clearInterval(pollInterval);
-                    return;
-                }
-                
-                const sessionData = getSessionData(sessionId);
-                
-                if (!sessionData) {
-                    // No data yet, keep waiting
-                    return;
-                }
-                
-                if (!sessionData.active && !sessionData.pending) {
-                    // Session ended
-                    showSessionEndedMessage();
-                    clearInterval(pollInterval);
-                    return;
-                }
-                
-                // Update slide if changed (and avoid updating if it's marked as pending)
-                if (!sessionData.pending && sessionData.currentSlide !== currentTempleIndex) {
-                    currentTempleIndex = sessionData.currentSlide;
-                    showCurrentTemple();
-                }
-            }, 1000); // Poll every second
-        }
-        
-        // Show streamlined waiting screen
-        function showStreamlinedWaiting(sid) {
-            const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = `
+
+        // Function to show the waiting screen
+        function showWaitingScreen() {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `
                 <div class="waiting-screen">
                     <h2>Connecting to presentation...</h2>
                     <p class="animated-dots">Waiting for presenter</p>
-                    <p>Session ID: ${sid}</p>
+                    <p>Session ID: ${sessionId}</p>
                 </div>
             `;
-            
-            // Start polling for session to become available
-            const waitInterval = setInterval(() => {
-                const sessionData = getSessionData(sid);
-                if (sessionData && !sessionData.pending) {
-                    clearInterval(waitInterval);
-                    window.location.reload(); // Simplest way to reconnect properly
-                }
-            }, 1500);
         }
-        
-        // Show simplified login screen
-        function showSimplifiedLogin() {
-            const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = `
+
+        // Function to show the login screen
+        function showLoginScreen() {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = `
                 <div class="login-container">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <button id="quick-presenter-btn" class="btn">Start as Presenter</button>
-                    </div>
+                    <button id="presenter-btn" class="btn" style="margin-bottom: 30px; width: 100%;">Start as Presenter</button>
                     
-                    <div style="text-align: center;">
-                        <h3>Join Existing Presentation</h3>
-                        <div class="form-group">
-                            <input type="text" id="quick-session-input" placeholder="Enter session ID">
-                        </div>
-                        <button id="quick-join-btn" class="btn">Join</button>
+                    <h3>Join Existing Presentation</h3>
+                    <div class="form-group">
+                        <input type="text" id="session-input" placeholder="Enter session ID">
+                        <button id="join-btn" class="btn" style="width: 100%;">Join Session</button>
                     </div>
                 </div>
             `;
-            
-            // Add event listeners for new buttons
-            setTimeout(() => {
-                document.getElementById('quick-presenter-btn').addEventListener('click', () => {
-                    const password = prompt("Enter presenter password:");
-                    if (password === PRESENTER_PASSWORD) {
-                        // Create session immediately
-                        isPresenterMode = true;
-                        const newSessionId = createPresenterSession();
-                        sessionId = newSessionId;
-                        
-                        // Generate viewer direct URL
-                        const baseUrl = window.location.href.split('?')[0];
-                        const viewerUrl = `${baseUrl}?session=${newSessionId}&direct=true`;
-                        
-                        // Show session info in an alert to ensure visibility
-                        alert(`Your session is ready!\n\nSession ID: ${newSessionId}\n\nShare this with your audience.`);
-                        
-                        // Continue to presenter mode
-                        setupPresenterMode();
-                        showPresentation();
-                    } else {
-                        alert("Incorrect password");
-                    }
-                });
-                
-                document.getElementById('quick-join-btn').addEventListener('click', () => {
-                    const sid = document.getElementById('quick-session-input').value.trim();
-                    if (sid) {
-                        window.location.href = `${window.location.href.split('?')[0]}?session=${sid}&direct=true`;
-                    } else {
-                        alert("Please enter a session ID");
-                    }
-                });
-                
-                document.getElementById('quick-session-input').addEventListener('keyup', (e) => {
-                    if (e.key === 'Enter') {
-                        document.getElementById('quick-join-btn').click();
-                    }
-                });
-            }, 100);
+
+            // Add event listeners
+            document.getElementById('presenter-btn').addEventListener('click', function() {
+                const password = prompt("Enter presenter password:");
+                if (password === PRESENTER_PASSWORD) {
+                    isPresenterMode = true;
+                    sessionId = createSession();
+                    window.location.href = `${window.location.href.split('?')[0]}?presenter=${password}&session=${sessionId}`;
+                } else {
+                    alert("Incorrect password");
+                }
+            });
+
+            document.getElementById('join-btn').addEventListener('click', function() {
+                const sid = document.getElementById('session-input').value.trim();
+                if (sid) {
+                    window.location.href = `${window.location.href.split('?')[0]}?session=${sid}&direct=true`;
+                } else {
+                    alert("Please enter a session ID");
+                }
+            });
+
+            document.getElementById('session-input').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('join-btn').click();
+                }
+            });
         }
-        
-        // Setup presenter mode
-        function setupPresenterMode() {
-            isPresenterMode = true;
-            
-            // Create a new session
-            const newSessionId = createPresenterSession();
-            sessionId = newSessionId;
-            
-            // Generate viewer direct URL
-            const baseUrl = window.location.href.split('?')[0];
-            const viewerUrl = `${baseUrl}?session=${newSessionId}&direct=true`;
-            
-            // Update interface for presenter view
-            const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = `
-                <div class="presenter-controls">
-                    <h3 style="color: #8b4513; text-align: center; margin-bottom: 20px;">Presenter Controls</h3>
-                    
-                    <div class="share-section">
-                        <div class="share-title">Share with your audience:</div>
-                        <p><strong>Session ID:</strong></p>
-                        <input type="text" id="presentation-session-id" value="${newSessionId}" readonly style="font-weight: bold; font-size: 1.1rem;">
-                        <button id="copy-session-btn" class="btn copy-btn">Copy Session ID</button>
-                        
-                        <p style="margin-top: 15px;"><strong>Direct Link:</strong></p>
-                        <input type="text" id="presentation-url" value="${viewerUrl}" readonly>
-                        <button id="copy-url-btn" class="btn copy-btn">Copy Link</button>
-                        
-                        <p style="margin-top: 15px;"><strong>QR Code:</strong></p>
-                        <div id="qrcode" style="margin: 10px auto; text-align: center; background: white; padding: 10px; width: fit-content;"></div>
-                    </div>
-                    
-                    <p style="margin-top: 15px;">Session Status: <span class="status-indicator status-active"></span> <strong>Active</strong></p>
-                    <button id="end-session-btn" class="btn" style="background-color: #d9534f; margin-top: 10px;">End Session</button>
-                </div>
+
+        // Function to start polling for updates as a viewer
+        function startPolling() {
+            const pollInterval = setInterval(() => {
+                const sessionData = getSessionData(sessionId);
                 
-                <div id="temple-container"></div>
-                
-                <div class="controls">
-                    <button id="prev-btn" class="btn" disabled>Previous</button>
-                    <button id="next-btn" class="btn">Next</button>
-                </div>
-                
-                <div class="progress">
-                    Temple <span id="current-index">1</span> of <span id="total-temples">${temples.length}</span>
-                </div>
-            `;
-            
-            // Regenerate the QR code
-            setTimeout(() => {
-                const qrcodeElement = document.getElementById('qrcode');
-                if (qrcodeElement) {
-                    new QRCode(qrcodeElement, {
-                        text: viewerUrl,
-                        width: 128,
-                        height: 128
-                    });
+                if (!sessionData) {
+                    // Session doesn't exist yet
+                    return;
                 }
                 
-                // Add event listeners for the controls
-                document.getElementById('copy-session-btn').addEventListener('click', function() {
-                    const sessionIdInput = document.getElementById('presentation-session-id');
-                    sessionIdInput.select();
-                    document.execCommand('copy');
-                    this.textContent = 'Copied!';
-                    setTimeout(() => {
-                        this.textContent = 'Copy Session ID';
-                    }, 2000);
-                });
-                
-                document.getElementById('copy-url-btn').addEventListener('click', function() {
-                    const urlInput = document.getElementById('presentation-url');
-                    urlInput.select();
-                    document.execCommand('copy');
-                    this.textContent = 'Copied!';
-                    setTimeout(() => {
-                        this.textContent = 'Copy Link';
-                    }, 2000);
-                });
-                
-                document.getElementById('end-session-btn').addEventListener('click', function() {
-                    if (confirm('Are you sure you want to end this presentation session?')) {
-                        endSession();
-                        alert('Session ended. All viewers will be disconnected.');
+                if (!sessionData.active) {
+                    // Session ended
+                    clearInterval(pollInterval);
+                    const contentArea = document.getElementById('content-area');
+                    contentArea.innerHTML = `
+                        <div class="waiting-screen">
+                            <h2>Session Ended</h2>
+                            <p>The presenter has ended this presentation session.</p>
+                            <button id="home-btn" class="btn">Return to Home</button>
+                        </div>
+                    `;
+                    document.getElementById('home-btn').addEventListener('click', function() {
                         window.location.href = window.location.href.split('?')[0];
-                    }
-                });
+                    });
+                    return;
+                }
                 
-                document.getElementById('prev-btn').addEventListener('click', function() {
-                    if (currentTempleIndex > 0) {
-                        currentTempleIndex--;
-                        showCurrentTemple();
-                    }
-                });
-                
-                document.getElementById('next-btn').addEventListener('click', function() {
-                    if (currentTempleIndex < temples.length - 1) {
-                        currentTempleIndex++;
-                        showCurrentTemple();
-                    }
-                });
-                
-                // Show the first temple
-                showCurrentTemple();
-            }, 100);
+                // Update current slide if changed
+                if (sessionData.currentSlide !== currentTempleIndex) {
+                    currentTempleIndex = sessionData.currentSlide;
+                    showViewerInterface();
+                }
+            }, 1000);
         }
-        
-        // Setup viewer mode
-        function setupViewerMode() {
-            isPresenterMode = false;
-            startPolling();
-        }
-        
-        // Show presentation for viewer
-        function showPresentation() {
-            const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = `
-                <div id="temple-container"></div>
-                
-                <div class="progress">
-                    Temple <span id="current-index">1</span> of <span id="total-temples">${temples.length}</span>
-                </div>
-            `;
-            
-            // Show the temple based on current index
-            showCurrentTemple();
-        }
-        
-        // Show session ended message
-        function showSessionEndedMessage() {
-            const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = `
-                <div class="waiting-screen">
-                    <div class="waiting-icon">⚠️</div>
-                    <h2>Session Ended</h2>
-                    <p>The presenter has ended this presentation session.</p>
-                    <button id="return-home-btn" class="btn">Return to Home</button>
-                </div>
-            `;
-            
-            // Add event listener to return home button
-            setTimeout(() => {
-                document.getElementById('return-home-btn').addEventListener('click', () => {
-                    window.location.href = window.location.href.split('?')[0];
-                });
-            }, 100);
-        }
-        
+
         // Initialize the application
-        function initializeApp() {
+        function initApp() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionParam = urlParams.get('session');
             const presenterParam = urlParams.get('presenter');
-            
-            // Direct presenter access with password in URL (for your personal use only)
-            if (presenterParam === PRESENTER_PASSWORD) {
-                setupPresenterMode();
+
+            if (presenterParam === PRESENTER_PASSWORD && sessionParam) {
+                // Presenter mode with existing session
+                isPresenterMode = true;
+                sessionId = sessionParam;
+                showPresenterInterface();
                 return;
             }
-            
+
             if (sessionParam) {
-                // Always try to join as viewer
-                if (joinSession(sessionParam)) {
-                    sessionId = sessionParam;
-                    
-                    // Check if session exists
-                    const sessionData = getSessionData(sessionId);
-                    if (sessionData && sessionData.active && !sessionData.pending) {
-                        // Session exists and is active
-                        currentTempleIndex = sessionData.currentSlide || 0;
-                        setupViewerMode();
-                        showPresentation();
-                    } else {
-                        // Session doesn't exist yet or is pending
-                        showStreamlinedWaiting(sessionId);
-                    }
+                // Viewer mode
+                sessionId = sessionParam;
+                const sessionData = getSessionData(sessionId);
+                
+                if (sessionData && sessionData.active) {
+                    // Session exists and is active
+                    currentTempleIndex = sessionData.currentSlide;
+                    showViewerInterface();
+                    startPolling();
+                } else {
+                    // Session doesn't exist yet or is not active
+                    showWaitingScreen();
+                    startPolling();
                 }
-            } else {
-                // Simplified login screen by default
-                showSimplifiedLogin();
+                return;
             }
+
+            // Show login screen by default
+            showLoginScreen();
         }
-        
-        // Run the application on page load
-        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Start the application
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
